@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VetFarm - Livestock Health & Treatment Tracker</title>
+  <title>VetFarm - Livestock Health, Diagnosis & Treatment Tracker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,7 +22,7 @@
         </div>
         <div>
           <h1 class="app-title">VetFarm</h1>
-          <p class="app-subtitle">Livestock Care & Treatment Log</p>
+          <p class="app-subtitle">Livestock Care, Auto-Diagnosis & Vet Scout</p>
         </div>
       </div>
       
@@ -59,7 +59,7 @@
               id="animalType" 
               name="animalType" 
               list="animalSuggestions" 
-              placeholder="e.g. Cow, Dairy Cattle, Goat, Sheep, Pig..." 
+              placeholder="e.g. Dairy Cattle, Boer Goat, Poultry, Pig..." 
               required
               autocomplete="off"
             >
@@ -79,41 +79,83 @@
             <small class="error-msg" id="animalTypeError"></small>
           </div>
 
-          <!-- Vet Nearby -->
+          <!-- Vet Nearby with Scout Button -->
           <div class="form-group">
-            <label for="vetNearby">Vet Nearby <span class="required">*</span></label>
-            <input 
-              type="text" 
-              id="vetNearby" 
-              name="vetNearby" 
-              placeholder="e.g. Dr. Adam (0801 234 5678) - Apex Vet Clinic" 
-              required
-              autocomplete="off"
-            >
+            <div class="label-with-action">
+              <label for="vetNearby">Vet Nearby <span class="required">*</span></label>
+              <button type="button" class="btn-scout-trigger" id="scoutVetsAddBtn" title="Scout nearby livestock vets with phone and clinics">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Auto-Scout Vets
+              </button>
+            </div>
+            <div class="input-with-button">
+              <input 
+                type="text" 
+                id="vetNearby" 
+                name="vetNearby" 
+                list="scoutedVetsDatalist"
+                placeholder="Doctor name, clinic & contact..." 
+                required
+                autocomplete="off"
+              >
+            </div>
             <small class="error-msg" id="vetNearbyError"></small>
           </div>
 
-          <!-- Symptoms -->
+          <!-- Symptoms (Full Width) -->
           <div class="form-group full-width">
-            <label for="symptoms">Symptoms <span class="required">*</span></label>
+            <label for="symptoms">Symptoms Observed <span class="required">*</span></label>
             <textarea 
               id="symptoms" 
               name="symptoms" 
               rows="2" 
-              placeholder="Describe observed health issues (e.g. loss of appetite, coughing, limping, fever, high temperature)..." 
+              placeholder="Describe symptoms (e.g. coughing, high fever, swollen udder, bloody droppings, limping)..." 
               required
             ></textarea>
             <small class="error-msg" id="symptomsError"></small>
+            
+            <!-- Intelligent Auto-Generation Assistant Bar -->
+            <div class="assist-panel">
+              <button type="button" class="btn btn-assist" id="autoGenerateBtn">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+                Auto-Generate Diagnosis & Treatment
+              </button>
+              <span class="assist-hint">Automatically evaluates symptoms to generate a diagnosis, care plan, and scout matching vets</span>
+            </div>
           </div>
 
-          <!-- Prescribed Treatment -->
+          <!-- Possible Diagnosis (Auto-generated or custom) -->
           <div class="form-group full-width">
-            <label for="treatment">Prescribed Treatment <span class="required">*</span></label>
+            <div class="label-with-action">
+              <label for="diagnosis">Possible Diagnosis <span class="required">*</span></label>
+              <span class="auto-badge" id="diagnosisBadge">Auto-Generated or Custom</span>
+            </div>
+            <textarea 
+              id="diagnosis" 
+              name="diagnosis" 
+              rows="2" 
+              placeholder="Auto-generated based on symptoms above (or type your own diagnosis)..." 
+              required
+            ></textarea>
+            <small class="error-msg" id="diagnosisError"></small>
+          </div>
+
+          <!-- Prescribed Treatment (Auto-generated from diagnosis) -->
+          <div class="form-group full-width">
+            <div class="label-with-action">
+              <label for="treatment">Prescribed Treatment <span class="required">*</span></label>
+              <span class="auto-badge" id="treatmentBadge">Protocol & Supportive Care</span>
+            </div>
             <textarea 
               id="treatment" 
               name="treatment" 
-              rows="2" 
-              placeholder="Medication, dosage, or care instructions (e.g. Oxytetracycline 10ml for 3 days, isolate in dry pen)..." 
+              rows="3" 
+              placeholder="Auto-generated treatment instructions based on the diagnosis (or write custom treatment)..." 
               required
             ></textarea>
             <small class="error-msg" id="treatmentError"></small>
@@ -125,7 +167,7 @@
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
-            Save Animal Record
+            Save Livestock Record
           </button>
         </div>
       </form>
@@ -141,7 +183,7 @@
         <input 
           type="search" 
           id="searchInput" 
-          placeholder="Search by animal, symptoms, treatment, or vet..." 
+          placeholder="Search by animal, symptoms, diagnosis, treatment, or vet..." 
           aria-label="Search livestock records"
           autocomplete="off"
         >
@@ -158,7 +200,7 @@
         <h2 class="section-title">Livestock Animals List</h2>
       </div>
 
-      <!-- Empty State Container (Displayed when no animals exist or match search) -->
+      <!-- Empty State Container -->
       <div id="emptyState" class="empty-state" style="display: none;">
         <div class="empty-icon-wrap">
           <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -167,7 +209,7 @@
           </svg>
         </div>
         <h3 id="emptyTitle">No Livestock Animals Yet</h3>
-        <p id="emptyMessage">Your farm list is currently empty. Add your first livestock animal above to track health symptoms, prescribed treatments, and vet contacts safely.</p>
+        <p id="emptyMessage">Your farm list is currently empty. Add your first livestock animal above to track health symptoms, auto-generate diagnoses, prescribed treatments, and scout nearby vets.</p>
         <button type="button" id="loadDemoBtn" class="btn btn-secondary">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -217,11 +259,21 @@
           </div>
 
           <div class="form-group">
-            <label for="editVetNearby">Vet Nearby <span class="required">*</span></label>
+            <div class="label-with-action">
+              <label for="editVetNearby">Vet Nearby <span class="required">*</span></label>
+              <button type="button" class="btn-scout-trigger" id="scoutVetsEditBtn" title="Scout nearby vets">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Scout Vets
+              </button>
+            </div>
             <input 
               type="text" 
               id="editVetNearby" 
               name="editVetNearby" 
+              list="scoutedVetsDatalist"
               required
               autocomplete="off"
             >
@@ -229,16 +281,39 @@
           </div>
 
           <div class="form-group full-width">
-            <label for="editSymptoms">Symptoms <span class="required">*</span></label>
+            <label for="editSymptoms">Symptoms Observed <span class="required">*</span></label>
             <textarea 
               id="editSymptoms" 
               name="editSymptoms" 
-              rows="3" 
+              rows="2" 
               required
             ></textarea>
             <small class="error-msg" id="editSymptomsError"></small>
+
+            <!-- Auto-Generate in Edit Modal -->
+            <div class="assist-panel">
+              <button type="button" class="btn btn-assist" id="editAutoGenerateBtn">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+                Re-Generate Diagnosis & Treatment
+              </button>
+            </div>
           </div>
 
+          <!-- Possible Diagnosis -->
+          <div class="form-group full-width">
+            <label for="editDiagnosis">Possible Diagnosis <span class="required">*</span></label>
+            <textarea 
+              id="editDiagnosis" 
+              name="editDiagnosis" 
+              rows="2" 
+              required
+            ></textarea>
+            <small class="error-msg" id="editDiagnosisError"></small>
+          </div>
+
+          <!-- Prescribed Treatment -->
           <div class="form-group full-width">
             <label for="editTreatment">Prescribed Treatment <span class="required">*</span></label>
             <textarea 
@@ -280,10 +355,51 @@
     </div>
   </div>
 
+  <!-- Auto-Scout Nearby Veterinarians Modal -->
+  <div id="scoutModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="scoutModalTitle" style="display: none;">
+    <div class="modal-card modal-scout">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="scout-header-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <div>
+            <h3 id="scoutModalTitle">Auto-Scouted Nearby Veterinarians</h3>
+            <p class="scout-subtitle">Licensed livestock veterinary doctors and mobile farm clinics</p>
+          </div>
+        </div>
+        <button type="button" class="close-btn" id="closeScoutModalBtn" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <div class="scout-body">
+        <div class="scout-filters" id="scoutCategoryFilters">
+          <button type="button" class="filter-chip active" data-filter="all">All Specialists</button>
+          <button type="button" class="filter-chip" data-filter="cattle">Cattle & Large</button>
+          <button type="button" class="filter-chip" data-filter="ruminant">Goats & Sheep</button>
+          <button type="button" class="filter-chip" data-filter="poultry">Poultry</button>
+          <button type="button" class="filter-chip" data-filter="emergency">24/7 Emergency</button>
+        </div>
+
+        <div class="scout-list" id="scoutedVetsList">
+          <!-- Dynamically populated with scouted vet doctors -->
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="closeScoutFooterBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Datalist for Scouted Vets auto-completion in inputs -->
+  <datalist id="scoutedVetsDatalist"></datalist>
+
   <!-- Quick Feedback Toast Notification -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
